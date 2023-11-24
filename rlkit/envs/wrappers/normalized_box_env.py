@@ -1,5 +1,5 @@
 import numpy as np
-from gym.spaces import Box
+from gymnasium.spaces.box import Box
 
 from rlkit.envs.proxy_env import ProxyEnv
 
@@ -33,7 +33,7 @@ class NormalizedBoxEnv(ProxyEnv):
         self._obs_mean = obs_mean
         self._obs_std = obs_std
         ub = np.ones(self._wrapped_env.action_space.shape)
-        self.action_space = Box(-1 * ub, ub)
+        self.action_space = Box(-1 * ub, ub, dtype=np.float64)
 
     def estimate_obs_stats(self, obs_batch, override_values=False):
         if self._obs_mean is not None and not override_values:
@@ -57,7 +57,8 @@ class NormalizedBoxEnv(ProxyEnv):
             next_obs = self._apply_normalize_obs(next_obs)
         return next_obs, reward * self._reward_scale, done, info
 
+    def randomize(self):
+        self._wrapped_env.randomize()
+
     def __str__(self):
         return "Normalized: %s" % self._wrapped_env
-
-
